@@ -1,31 +1,31 @@
 #  this is the first FastAPI script that I wrote
 #  this is a simple crud application
-#  for running this script i neet to install FastAPI and ASGI server named Uvicorn
+#  for running this script i need to install FastAPI and ASGI server named Uvicorn
 #  pip3 install fastapi
 #  pip3 install "uvicorn[standard]"
 #  python3 -m uvicorn firstscript:app --reload 
 
 
 
-from typing import Union 
+from typing import Union, Optional 
 from fastapi import FastAPI 
 from pydantic import BaseModel
 
 
 class Item(BaseModel):
     item_id: int
-    name: str
-    price: int
+    name: Union[str, None]
+    price: Union[int, None]
 
 
 class UpdateItem(BaseModel):
-    name: str
-    price: int
+    name: Optional[str] = None
+    price: Optional[int] = None
 
 
 app = FastAPI()
 
-api_prefix = "/items/apt/v1"
+api_prefix = "/items/api/v1"
 
 items: list = [
     {
@@ -77,8 +77,10 @@ def update_item(item_id:int, updated_item:UpdateItem):
 
     for item in items:
         if item.get("item_id") == item_id:
-            item["name"] = updated_item.name
-            item["price"] = updated_item.price
+            if updated_item.name is not None:
+                item["name"] = updated_item.name
+            if updated_item.price is not None:
+                item["price"] = updated_item.price
 
             return {
                 "msg": "successfully update item",
